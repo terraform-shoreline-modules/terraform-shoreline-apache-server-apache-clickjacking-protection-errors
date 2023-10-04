@@ -1,0 +1,110 @@
+{
+  "name": "apache_clickjacking_protection_errors",
+  "description": "Apache Clickjacking Protection Errors refer to a security vulnerability in the Apache web server that allows an attacker to trick a user into clicking on a malicious link or button, leading to unintended actions or data theft. Clickjacking is a common attack technique used to exploit user interface design flaws and bypass web application security measures. The protection errors indicate that the web server is not properly configured to prevent clickjacking attacks, leaving it susceptible to exploitation. It is important to address this vulnerability quickly to prevent potential data breaches or other security incidents.",
+  "params": [
+    {
+      "name": "PATH_TO_APACHE_ACCESS_LOG",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_APACHE_ERROR_LOG",
+      "value": ""
+    },
+    {
+      "name": "PATH_TO_APACHE_CONFIG",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Apache Clickjacking Protection Errors.\nApache Clickjacking Protection Errors refer to a security vulnerability in the Apache web server that allows an attacker to trick a user into clicking on a malicious link or button, leading to unintended actions or data theft. Clickjacking is a common attack technique used to exploit user interface design flaws and bypass web application security measures. The protection errors indicate that the web server is not properly configured to prevent clickjacking attacks, leaving it susceptible to exploitation. It is important to address this vulnerability quickly to prevent potential data breaches or other security incidents."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Apache version"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `httpd -v`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Apache configuration for \"X-Frame-Options\" header"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `grep -i \"x-frame-options\" ${PATH_TO_APACHE_CONFIG}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Apache configuration for \"Content-Security-Policy\" header"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `grep -i \"content-security-policy\" ${PATH_TO_APACHE_CONFIG}`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Apache access logs for clickjacking attempts"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `grep -i \"clickjacking\" ${PATH_TO_APACHE_ACCESS_LOG}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Apache error logs for any relevant errors or warnings"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `tail -n 50 ${PATH_TO_APACHE_ERROR_LOG}`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Configure the web server to send X-Frame-Options headers to prevent clickjacking attacks. This can be done by adding the following line to the Apache configuration file: \"Header always append X-Frame-Options SAMEORIGIN\"."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_add_x_frame_options_to_apache_conf()"
+    }
+  ]
+}
